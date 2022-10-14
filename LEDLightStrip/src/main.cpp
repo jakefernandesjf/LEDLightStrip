@@ -1,10 +1,18 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
+#include <FastLED.h>
 
 // Pins for OLED display
 #define OLED_CLOCK  15
 #define OLED_DATA   4
 #define OLED_RESET  16
+
+// FastLED definitions
+#define LED_PIN     5
+#define NUM_LEDS    10
+
+// Frame buffer for FastLED
+CRGB LEDs[NUM_LEDS] = {0};
 
 
 #pragma region Fields
@@ -33,6 +41,7 @@ double FramesPerSecond(double seconds)
 void setup() 
 {
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
 
   // Serial Log
   Serial.begin(115200);
@@ -44,6 +53,10 @@ void setup()
   OLED.clear();
   OLED.setFont(u8g2_font_profont15_tf);
   OLED_LINEHEIGHT = OLED.getFontAscent() - OLED.getFontDescent();
+
+  // Configure FastLED
+  FastLED.addLeds<WS2812B, LED_PIN, GRB>(LEDs, NUM_LEDS);
+  FastLED.setBrightness(16);
 }
 
 void loop() 
@@ -55,10 +68,15 @@ void loop()
     // Start counter for fps calculation
     double stopwatchStart = millis() / 1000.0;
 
+    // OLED drawing handler
     OLED.clearBuffer();
     OLED.setCursor(0, OLED_LINEHEIGHT);
     OLED.printf("FPS: %.1f", fps);
     OLED.sendBuffer();
+
+    // LED strip handler
+    LEDs[0] = CRGB::Red;
+    FastLED.show();
 
     // End counter and calculate fps
     double stopwatchEnd = millis() / 1000.0;
