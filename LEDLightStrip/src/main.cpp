@@ -32,11 +32,11 @@ void DrawOledData(CFastLED FastLED)
 {
   g_OLED.clearBuffer();
   g_OLED.setCursor(0, g_OLED_LINEHEIGHT);
-  g_OLED.printf("FPS: %u", FastLED.getFPS());
+  g_OLED.printf("FPS: %4u Hz", FastLED.getFPS());
   g_OLED.setCursor(0, g_OLED_LINEHEIGHT * 2);
-  g_OLED.printf("Power: %u mW", calculate_unscaled_power_mW(FastLED.leds(), NUM_LEDS));
+  g_OLED.printf("PWR: %4u mW", calculate_unscaled_power_mW(FastLED.leds(), NUM_LEDS));
   g_OLED.setCursor(0, g_OLED_LINEHEIGHT * 3);
-  g_OLED.printf("Bright: %u mW", calculate_max_brightness_for_power_mW(g_BRIGHTNESS, g_POWER_LIMIT));
+  g_OLED.printf("BRT: %4u mW", calculate_max_brightness_for_power_mW(g_BRIGHTNESS, g_POWER_LIMIT));
   g_OLED.sendBuffer();
 }
 #pragma endregion
