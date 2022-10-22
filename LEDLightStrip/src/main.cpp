@@ -1,6 +1,13 @@
-#include <Arduino.h>
-#include <U8g2lib.h>
-#include <FastLED.h>
+/*
+    File:           main.cpp
+    Author:         Jake Fernandes
+    Description:    Main code to control ESP32 handling for LED strip
+    
+    Change Log:
+    22 OCT 2022     Reorganized main with a header file.
+*/
+
+#include <header.h>
 
 #pragma region Fields
 // Pins for OLED display
