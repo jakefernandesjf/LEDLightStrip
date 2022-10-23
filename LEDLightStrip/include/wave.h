@@ -9,7 +9,7 @@
 */
 #include <FastLED.h>
 
-/// @brief A wave animation that lights the LEDs with a choice of flow length and color forwards, and then a choice of ebb length and color backwards.
+/// @brief A wave animation that lights the LEDs with a choice of flow length and hue forwards, and then a choice of ebb length and hue backwards.
 /// @param pFirstLED 
 /// @param numToFill 
 /// @param flowHue 
@@ -34,9 +34,9 @@ void wave( struct CRGB * pFirstLED, int numToFill,
     static int waveStartPos = 0;                // Current wave start position
 
     // Set strip to ebb if we are at the start of the animation
-    if(iPos == 0)
+    if (iPos == 0)
     {
-        for(int i = 0; i < numToFill; i++)
+        for (int i = 0; i < numToFill; i++)
         {
             pFirstLED[i].setHue(ebbHue);
         }
@@ -49,12 +49,12 @@ void wave( struct CRGB * pFirstLED, int numToFill,
             // Set first LED in flow white
             pFirstLED[iPos].setHSV(flowHue, 0, 255);
             // Set start of strip to iPos to flowHue
-            for(int i = 0; i < iPos; i++)
+            for (int i = 0; i < iPos; i++)
             {
                 pFirstLED[i].setHue(flowHue);
             }
             // Set flow randomly decreasingly saturated
-            for(int i = waveStartPos; i < iPos; i++)
+            for (int i = waveStartPos; i < iPos; i++)
             {
                 int iSaturation = (iPos - i) * FADE_FLOW_FACTOR;
                 if(random(10)>5)
@@ -74,12 +74,12 @@ void wave( struct CRGB * pFirstLED, int numToFill,
             // Set first LED in ebb white
             pFirstLED[iPos].setHSV(ebbHue, 0, 255);
             // Set iPos to end of strip to ebbHue
-            for(int i = numToFill; i > iPos; i--)
+            for (int i = numToFill; i > iPos; i--)
             {
                 pFirstLED[i].setHue(ebbHue);
             }
             // Set ebb randomly decreasingly saturated
-            for(int i = iPos; i < waveStartPos; i++)
+            for (int i = iPos; i < waveStartPos; i++)
             {
                 int iSaturation = (iPos - i) * FADE_EBB_FACTOR;
                 if(random(10)>5)
