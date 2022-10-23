@@ -5,6 +5,7 @@
     
     Change Log:
     22 OCT 2022     Reorganized main with a header file.
+    23 OCT 2022     Updated to use wave animation.
 */
 
 #include <header.h>
@@ -17,7 +18,7 @@
 
 // FastLED definitions
 #define LED_PIN     5
-#define NUM_LEDS    10
+#define NUM_LEDS    15
 
 // Frame buffer for FastLED
 CRGB g_LEDs[NUM_LEDS] = {0};
@@ -75,11 +76,6 @@ void setup()
 
 void loop() 
 {
-  uint8_t initialHue = 0;
-  const uint8_t deltaHue = 4;
-  const uint8_t hueDensity = 1;
-
-
   while (true)
   {
     // OLED drawing handler
@@ -87,11 +83,11 @@ void loop()
     {
       DrawOledData(FastLED);
     }
-  
+
     // LED strip handler
-    fill_rainbow(g_LEDs, NUM_LEDS, initialHue += hueDensity, deltaHue);
+    wave(g_LEDs, NUM_LEDS, HUE_AQUA, HUE_YELLOW, 10);
     FastLED.setBrightness(16);
-    FastLED.delay(10);
+    FastLED.delay(100);
   }
 }
 #pragma endregion
