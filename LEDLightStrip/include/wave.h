@@ -6,6 +6,7 @@
     Change Log:
     22 OCT 2022     Created.
     23 OCT 2022     Created first implementation of wave animation.
+    23 OCT 2022     Bug fixes and added Serial Debug logging.
 */
 #include <FastLED.h>
 
@@ -33,7 +34,13 @@ void wave( struct CRGB * pFirstLED, int numToFill,
     static int iDirection = FLOW_DIRECTION;     // Current direction of wave (FLOW and EBB)
     static int waveStartPos = 0;                // Current wave start position
 
-    // Set strip to ebb if we are at the start of the animation
+    // Serial Debug Logging
+    Serial.println("iDirection = " + (String)iDirection);
+    Serial.println("iPos = " + (String)iPos);
+    Serial.println("waveStartPos = " + (String)waveStartPos);
+    Serial.println("");
+
+    // Set strip to ebb hue if we are at the start of the animation
     if (iPos == 0)
     {
         for (int i = 0; i < numToFill; i++)
@@ -57,7 +64,7 @@ void wave( struct CRGB * pFirstLED, int numToFill,
             for (int i = waveStartPos; i < iPos; i++)
             {
                 int iSaturation = (iPos - i) * FADE_FLOW_FACTOR;
-                if(random(10)>5)
+                if(random(10)>3)
                 {
                     pFirstLED[i].setHSV(flowHue, iSaturation, 255);
                 }
@@ -74,7 +81,7 @@ void wave( struct CRGB * pFirstLED, int numToFill,
             // Set first LED in ebb white
             pFirstLED[iPos].setHSV(ebbHue, 0, 255);
             // Set iPos to end of strip to ebbHue
-            for (int i = numToFill; i > iPos; i--)
+            for (int i = numToFill - 1; i > iPos; i--)
             {
                 pFirstLED[i].setHue(ebbHue);
             }
@@ -82,7 +89,7 @@ void wave( struct CRGB * pFirstLED, int numToFill,
             for (int i = iPos; i < waveStartPos; i++)
             {
                 int iSaturation = (iPos - i) * FADE_EBB_FACTOR;
-                if(random(10)>5)
+                if(random(10)>3)
                 {
                     pFirstLED[i].setHSV(ebbHue, iSaturation, 255);
                 }
@@ -97,7 +104,7 @@ void wave( struct CRGB * pFirstLED, int numToFill,
     }
 
     // If wave is at the end of the strip, run ebb to the start of the strip to reset
-    if (iPos > numToFill)
+    if (iPos == numToFill)
     {
         iDirection = EBB_DIRECTION;
         waveStartPos = ebbLength;
