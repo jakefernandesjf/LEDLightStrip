@@ -8,18 +8,33 @@
     23 OCT 2022     Created first implementation of wave animation.
     23 OCT 2022     Bug fixes and added Serial Debug logging.
     26 OCT 2022     Created new wave function skeleton definition. Made file into .cpp and moved declerations to animations.h.
+    26 OCT 2022     Created initial test of custom wave equation. Needs DrawFractionalPixels() implemented.
 */
 #include <animations.h>
 
 
 void wave( struct CRGB * pFirstLED, int numToFill,
-                uint8_t flowHue,
-                uint8_t ebbHue,
+                CRGB flowColor,
+                CRGB ebbColor,
                 double flowLength,
                 double ebbLength,
                 double waveSpeed)
 {
-    // TODO
+    static double wavePosition = 0;                 // Current wave position on LED strip (fractional positions allowed)
+    static double lastWavePosition = 0;             // Last iteration wave position on LED strip
+    unsigned long time = millis();
+
+    //      f(x) = k * sin(x/s) + ( c * x^(1/2) )
+    //  where
+    //      x       is time in milliseconds,
+    //      f(x)    is the wave endpoint position on LED strip,
+    //      c       is the flow length constant,
+    //      k       is the ebb length constant, and
+    //      s       is the wave speed constant.
+    wavePosition = ebbLength * sin(time / waveSpeed) +
+                    flowLength * sqrt(time);
+
+    DrawFractionalPixels(pFirstLED, wavePosition, 1, flowColor);
 }
 
 
@@ -36,7 +51,7 @@ void wave_v1( struct CRGB * pFirstLED, int numToFill,
     const int FLOW_DIRECTION = 1;
     const int EBB_DIRECTION = -1;
     
-    static int iPos = 0;                        // Current wave position on LED strip 
+    static int iPos = 0;                        // Current wave position on LED strip
     static int iDirection = FLOW_DIRECTION;     // Current direction of wave (FLOW and EBB)
     static int waveStartPos = 0;                // Current wave start position
 
