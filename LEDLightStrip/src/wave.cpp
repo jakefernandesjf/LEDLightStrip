@@ -1,5 +1,5 @@
 /*
-    File:           wave.h
+    File:           wave.cpp
     Author:         Jake Fernandes
     Description:    Wave animation for FastLED
     
@@ -7,21 +7,27 @@
     22 OCT 2022     Created.
     23 OCT 2022     Created first implementation of wave animation.
     23 OCT 2022     Bug fixes and added Serial Debug logging.
+    26 OCT 2022     Created new wave function skeleton definition. Made file into .cpp and moved declerations to animations.h.
 */
-#include <FastLED.h>
+#include <animations.h>
 
-/// @brief A wave animation that lights the LEDs with a choice of flow length and hue forwards, and then a choice of ebb length and hue backwards.
-/// @param pFirstLED 
-/// @param numToFill 
-/// @param flowHue 
-/// @param ebbHue 
-/// @param flowLength 
-/// @param ebbLength 
+
 void wave( struct CRGB * pFirstLED, int numToFill,
+                uint8_t flowHue,
+                uint8_t ebbHue,
+                double flowLength,
+                double ebbLength,
+                double waveSpeed)
+{
+    // TODO
+}
+
+
+void wave_v1( struct CRGB * pFirstLED, int numToFill,
                   uint8_t flowHue,
                   uint8_t ebbHue,
                   int flowLength,
-                  int ebbLengthFactor = 2)
+                  int ebbLengthFactor)
 {
     int ebbLength = flowLength / ebbLengthFactor;
 
