@@ -5,7 +5,7 @@
     
     Change Log:
     26 OCT 2022     Created skeleton definitions.
-    30 OCT 2022     Implemented ColorFraction() and DrawFractionalPixels()
+    30 OCT 2022     Implemented ColorFraction() and DrawFractionalPixels().
 */
 #include <ledgfx.h>
 using namespace std;

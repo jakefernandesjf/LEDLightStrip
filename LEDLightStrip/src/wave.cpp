@@ -9,32 +9,45 @@
     23 OCT 2022     Bug fixes and added Serial Debug logging.
     26 OCT 2022     Created new wave function skeleton definition. Made file into .cpp and moved declerations to animations.h.
     26 OCT 2022     Created initial test of custom wave equation. Needs DrawFractionalPixels() implemented.
+    30 OCT 2022     Implemented wave function.
 */
 #include <animations.h>
 
 
 void wave( struct CRGB * pFirstLED, int numToFill,
-                CRGB flowColor,
-                CRGB ebbColor,
+                CRGB waterColor,
+                CRGB sandColor,
                 double flowLength,
                 double ebbLength,
                 double waveSpeed)
 {
-    static double wavePosition = 0;                 // Current wave position on LED strip (fractional positions allowed)
-    static double lastWavePosition = 0;             // Last iteration wave position on LED strip
-    unsigned long time = millis();
+    double wavePosition;                                                            // Current wave position on LED strip (fractional positions allowed)
+    static float lastWavePosition = 0;                                              // Last iteration wave position on LED strip
+    static double initialTime = millis();                                           // Initial start time of function
+    const CRGB waveColor = CRGB::White;                                             // Color of wave
+    const int delay = 10;                                                           // Delay for each iteration
+    const float waveSize = (float)numToFill / 15;                                   // Wave Size dependent on LED strip length
 
-    //      f(x) = k * sin(x/s) + ( c * x^(1/2) )
-    //  where
-    //      x       is time in milliseconds,
-    //      f(x)    is the wave endpoint position on LED strip,
-    //      c       is the flow length constant,
-    //      k       is the ebb length constant, and
-    //      s       is the wave speed constant.
-    wavePosition = ebbLength * sin(time / waveSpeed) +
-                    flowLength * sqrt(time);
 
-    DrawFractionalPixels(pFirstLED, wavePosition, 1, flowColor);
+
+    double time = (millis() - initialTime) / 1000.0;
+    wavePosition = ebbLength * sin(time / waveSpeed) + flowLength * sqrt(time);     // Calculate wave position
+
+
+    FastLED.clear();
+    DrawFractionalPixels(pFirstLED, numToFill, wavePosition, waveSize, waveColor);
+    int wavePixel = min((int)floor(wavePosition), numToFill);
+    // Draw Water
+    for(int i = 0; i < wavePixel; i++)
+    {
+        pFirstLED[i] += waterColor;
+    }
+    // Draw sand
+    for (int j = wavePixel; j <= numToFill; j++)
+    {
+        pFirstLED[j] += sandColor;
+    }
+    FastLED.delay(delay);
 }
 
 

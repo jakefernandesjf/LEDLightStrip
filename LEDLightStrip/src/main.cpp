@@ -8,6 +8,7 @@
     23 OCT 2022     Updated to use wave animation.
     23 OCT 2022     Updates for externally powered LEDs.
     26 OCT 2022     Updated name of wave function.
+    30 OCT 2022     Updated to use new wave function.
 */
 
 #include <header.h>
@@ -88,9 +89,7 @@ void loop()
     }
 
     // LED strip handler
-    wave_v1(g_LEDs, NUM_LEDS, HUE_AQUA, HUE_YELLOW, 20);
-    FastLED.setBrightness(64);
-    FastLED.delay(100);
+    wave(g_LEDs, NUM_LEDS-1, CRGB::Aqua, CRGB::Yellow, 5, 5, 2);
   }
 }
 #pragma endregion
