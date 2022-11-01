@@ -9,6 +9,7 @@
     23 OCT 2022     Updates for externally powered LEDs.
     26 OCT 2022     Updated name of wave function.
     30 OCT 2022     Updated to use new wave function.
+    01 NOV 2022     Updated to use wave_palette().
 */
 
 #include <header.h>
@@ -54,6 +55,22 @@ void DrawOledData(CFastLED FastLED)
 
 
 #pragma region Main
+// Define Gradiant
+DEFINE_GRADIENT_PALETTE( water_gp ) 
+  {
+    0,      10,   151,  255,
+    46,     0,    255,  235,
+    179,    80,    92,  252,
+    255,    10,   151,  255,
+  };
+
+DEFINE_GRADIENT_PALETTE( sand_gp ) 
+  {
+    0,      200,  200,   49,
+    255,    255,  255,  0,
+  };
+
+
 void setup() 
 {
   // Set Pin Modes
@@ -80,6 +97,8 @@ void setup()
 
 void loop() 
 {
+  CRGBPalette16 waterPalette = water_gp;
+  CRGBPalette16 sandPalette = sand_gp;
   while (true)
   {
     // OLED drawing handler
@@ -89,7 +108,11 @@ void loop()
     }
 
     // LED strip handler
-    wave(g_LEDs, NUM_LEDS-1, CRGB::Aqua, CRGB::Yellow, 5, 5, 2);
+    wave_palette(g_LEDs, NUM_LEDS-1, waterPalette, sandPalette, 7, 10, 0.5);
+    // static int i = 0;
+    // fill_palette(g_LEDs, 50, i, 255/50, waterPalette, 255, TBlendType::LINEARBLEND);
+    // i--;
+    // FastLED.delay(10);
   }
 }
 #pragma endregion

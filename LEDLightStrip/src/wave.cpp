@@ -10,8 +10,76 @@
     26 OCT 2022     Created new wave function skeleton definition. Made file into .cpp and moved declerations to animations.h.
     26 OCT 2022     Created initial test of custom wave equation. Needs DrawFractionalPixels() implemented.
     30 OCT 2022     Implemented wave function.
+    01 NOV 2022     Implemented wave_palette().
 */
 #include <animations.h>
+
+void wave_palette( struct CRGB * pFirstLED, int numToFill,
+                CRGBPalette16 waterColorPalette,
+                CRGBPalette16 sandColorPalette,
+                double flowLength,
+                double ebbLength,
+                double waveSpeed)
+{
+    const int DELAY = 10;                                                           // Delay for each iteration
+    // const float MAX_WAVE_SIZE = (float)numToFill / 10;                              // Wave Size dependent on LED strip length
+    const CRGB WAVE_COLOR = CRGB::White;                                            // Color of wave
+
+    static double initialTime = millis();                                           // Initial start time of function
+    
+    double wavePosition;                                                            // Current wave position on LED strip (fractional positions allowed)
+    static double lastWavePosition = 0.0;                                           // Last iteration wave position on LED strip
+    static double wavePeak = 0.0;                                                   // Current peak of wave
+    static double previousWavePeak = 0.0;                                           // Previous peak of wave
+    static bool isFlowDirection = true;                                             // Is Flow direction of wave (true for flow, and false for ebb)
+
+
+    #pragma region Wave Position calculation
+    double time = (millis() - initialTime) / 1000.0;
+    double waveSqrt = flowLength * sqrt(time);
+    double waveSin = ebbLength * sin(time / waveSpeed);
+    
+    wavePosition = waveSin + waveSqrt;
+    int wavePixel = min((int)floor(wavePosition), numToFill);
+    int paletteIndex = wavePixel - floor(2 * waveSin + waveSqrt);
+    #pragma endregion
+
+
+    #pragma region Draw LEDs
+    FastLED.clear();
+
+
+    // Draw Water
+    fill_palette(pFirstLED, wavePixel, paletteIndex, 255 / (numToFill * 2), waterColorPalette, 255, TBlendType::LINEARBLEND);
+
+    // Draw sand
+    uint8_t currentIndex = paletteIndex;
+    for (int j = wavePixel; j <= numToFill; j++)
+    {
+        pFirstLED[j] = ColorFromPalette( sandColorPalette, currentIndex, 255, TBlendType::LINEARBLEND);
+        currentIndex += 255 / (numToFill * 2);
+    }
+
+    // Draw Wave
+    double waveSize;
+    if(isFlowDirection)
+        waveSize = max( abs(wavePosition - wavePeak), 1.0);
+    else
+        waveSize = max( abs(wavePosition - previousWavePeak), 1.0);
+    DrawFractionalPixels(pFirstLED, numToFill, wavePosition, waveSize, WAVE_COLOR);
+    // Check if we have reached a peak
+    if ( (wavePosition < lastWavePosition && isFlowDirection) || (wavePosition > lastWavePosition && !isFlowDirection))
+    {
+        previousWavePeak = wavePeak;
+        wavePeak = lastWavePosition;
+        isFlowDirection = !isFlowDirection;
+    }
+    lastWavePosition = wavePosition;
+
+
+    FastLED.delay(DELAY);
+    #pragma endregion
+}
 
 
 void wave( struct CRGB * pFirstLED, int numToFill,
@@ -27,7 +95,6 @@ void wave( struct CRGB * pFirstLED, int numToFill,
     const CRGB waveColor = CRGB::White;                                             // Color of wave
     const int delay = 10;                                                           // Delay for each iteration
     const float waveSize = (float)numToFill / 15;                                   // Wave Size dependent on LED strip length
-
 
 
     double time = (millis() - initialTime) / 1000.0;
