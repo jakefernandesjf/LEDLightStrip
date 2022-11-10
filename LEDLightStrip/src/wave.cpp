@@ -12,6 +12,7 @@
     30 OCT 2022     Implemented wave function.
     01 NOV 2022     Implemented wave_palette().
     09 NOV 2022     Fixed Flow/Ebb lineup for wave_palette().
+    09 NOV 2022     Implemented wave_palette() reset animation.
 */
 #include <animations.h>
 
@@ -23,26 +24,39 @@ void wave_palette( struct CRGB * pFirstLED, int numToFill,
                 double waveSpeed)
 {
     const int DELAY = 10;                                                           // Delay for each iteration
-    // const float MAX_WAVE_SIZE = (float)numToFill / 10;                              // Wave Size dependent on LED strip length
     const CRGB WAVE_COLOR = CRGB::White;                                            // Color of wave
-
-    static double initialTime = millis();                                           // Initial start time of function
-    
-    double wavePosition;                                                            // Current wave position on LED strip (fractional positions allowed)
+    const int WAVE_MULTIPLIER = 15;                                                 // Multiplier for wave size
+    static double waveSize = 1;                                                     // Wave size in the animation
+    double wavePosition = 0.0;                                                      // Current wave position on LED strip (fractional positions allowed)
     static double lastWavePosition = 0.0;                                           // Last iteration wave position on LED strip
-    static double wavePeak = 0.0;                                                   // Current peak of wave
-    static double previousWavePeak = 0.0;                                           // Previous peak of wave
-    static bool isFlowDirection = true;                                             // Is Flow direction of wave (true for flow, and false for ebb)
+    static double animationDirection = 1.0;                                         // Current direction of animation (-1.0 for reset sequence)
+    static double initialTime = millis();                                           // Initial start time of function
+    double time;                                                                    // Current time for animation
 
 
     #pragma region Wave Position calculation
-    double time = (millis() - initialTime) / 1000.0;
+    time = (millis() - initialTime) / 1000.0;
+    time *= animationDirection;
+
     double waveSqrt = flowLength * sqrt(time);
     double waveSin = ebbLength * sin(time / waveSpeed);
-    
-    wavePosition = waveSin + waveSqrt;
-    int wavePixel = min((int)floor(wavePosition), numToFill);
+    wavePosition = max( 0.0, min(waveSin + waveSqrt, (double)numToFill));           // 0 <= wavePosition <= numToFill
+    int wavePixel = (int)floor(wavePosition);
     int paletteIndex = wavePixel - floor(2 * waveSin + waveSqrt);
+
+
+    // Determine if we need to change animation direction
+    bool forwardDirectionEndBool = (animationDirection == 1.0) && (wavePosition == (double)numToFill);
+    bool backwardDirectionEndBool = (animationDirection == -1.0) && (wavePosition == 0.0);
+    if(forwardDirectionEndBool || backwardDirectionEndBool)
+    {
+        animationDirection *= -1.0;
+        initialTime = millis();
+    }
+    if(forwardDirectionEndBool)
+    {
+        initialTime *= 2;
+    }
     #pragma endregion
 
 
