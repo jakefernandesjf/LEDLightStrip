@@ -10,6 +10,7 @@
     26 OCT 2022     Updated name of wave function.
     30 OCT 2022     Updated to use new wave function.
     01 NOV 2022     Updated to use wave_palette().
+    09 NOV 2022     Fixed wave_palette().
 */
 
 #include <header.h>
@@ -26,8 +27,8 @@
 
 // Frame buffer for FastLED
 CRGB g_LEDs[NUM_LEDS] = {0};
-int g_BRIGHTNESS = 64;
-int g_POWER_LIMIT = 2000;
+int g_BRIGHTNESS = 255;
+int g_POWER_LIMIT = 5000;
 
 // Constructor for OLED display (Hardware mode)
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_OLED(U8G2_R2, OLED_RESET, OLED_CLOCK, OLED_DATA);
@@ -66,8 +67,8 @@ DEFINE_GRADIENT_PALETTE( water_gp )
 
 DEFINE_GRADIENT_PALETTE( sand_gp ) 
   {
-    0,      200,  200,   49,
-    255,    255,  255,  0,
+    0,     219,   165,    7,
+    255,   255,   255,    0,
   };
 
 
@@ -108,11 +109,7 @@ void loop()
     }
 
     // LED strip handler
-    wave_palette(g_LEDs, NUM_LEDS-1, waterPalette, sandPalette, 7, 10, 0.5);
-    // static int i = 0;
-    // fill_palette(g_LEDs, 50, i, 255/50, waterPalette, 255, TBlendType::LINEARBLEND);
-    // i--;
-    // FastLED.delay(10);
+    wave_palette(g_LEDs, 50, waterPalette, sandPalette, 7, 10, 1);
   }
 }
 #pragma endregion

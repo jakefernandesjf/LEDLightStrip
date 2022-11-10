@@ -11,6 +11,7 @@
     26 OCT 2022     Created initial test of custom wave equation. Needs DrawFractionalPixels() implemented.
     30 OCT 2022     Implemented wave function.
     01 NOV 2022     Implemented wave_palette().
+    09 NOV 2022     Fixed Flow/Ebb lineup for wave_palette().
 */
 #include <animations.h>
 
@@ -61,22 +62,14 @@ void wave_palette( struct CRGB * pFirstLED, int numToFill,
     }
 
     // Draw Wave
-    double waveSize;
-    if(isFlowDirection)
-        waveSize = max( abs(wavePosition - wavePeak), 1.0);
-    else
-        waveSize = max( abs(wavePosition - previousWavePeak), 1.0);
-    DrawFractionalPixels(pFirstLED, numToFill, wavePosition, waveSize, WAVE_COLOR);
-    // Check if we have reached a peak
-    if ( (wavePosition < lastWavePosition && isFlowDirection) || (wavePosition > lastWavePosition && !isFlowDirection))
+    EVERY_N_MILLISECONDS(100)
     {
-        previousWavePeak = wavePeak;
-        wavePeak = lastWavePosition;
-        isFlowDirection = !isFlowDirection;
+        waveSize = max( WAVE_MULTIPLIER * abs(wavePosition - lastWavePosition), 1.0);
     }
+    DrawFractionalPixels(pFirstLED, numToFill, wavePosition, waveSize, WAVE_COLOR);
+
+
     lastWavePosition = wavePosition;
-
-
     FastLED.delay(DELAY);
     #pragma endregion
 }
